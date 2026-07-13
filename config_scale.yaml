@@ -1,0 +1,17 @@
+# nn_eos scaling configuration
+# One entry per column per EOS
+# Methods: minmax, standard, maxval
+
+ph2_qcc:
+  T_K:    {method: minmax}
+  P_Pa:   {method: standard}
+  rho:    {method: maxval}
+  drdT:   {method: standard}
+  drdP:   {method: standard}
+  cs2:    {method: maxval}
+  h:      {method: minmax}   # enthalpy — can be negative, use standard
+  cp:     {method: minmax}   # heat capacity
+  u:      {method: minmax}   # internal energy — can be negative
+  gamma:  {method: standard}   # Gruneisen coefficient
+  s:      {method: minmax}   # entropy — can be negative
+  g:      {method: minmax}   # Gibbs / chemical potential — can be negative
