@@ -1,0 +1,35 @@
+
+Loaded: /home/aritram/Desktop/eos_work/github_upload/nn_eos_web/data/raw/liquid_ph2_qcc.csv  (111,053 rows)
+  Columns: ['P', 'T', 'rho', 'drdT', 'drdP', 'cs2', 'h', 'cp', 'u', 'gamma', 's', 'g']
+  Renamed columns: {'T': 'T_K', 'P': 'P_Pa'}
+
+Scaling columns:
+  P_Pa          method=minmax    p1=100000  p2=200000
+  T_K           method=minmax    p1=15  p2=29.0553
+  cp            method=minmax    p1=3093.22  p2=6434.71
+  cs2           method=maxval    p1=2.04548e+06  p2=0
+  drdP          method=standard  p1=7.14765e-06  p2=2.1954e-05
+  drdT          method=standard  p1=-3.35644  p2=7.73159
+  g             method=minmax    p1=-4.68383e+06  p2=-4.55236e+06
+  gamma         method=standard  p1=2.05273  p2=0.511169
+  h             method=minmax    p1=-4.4576e+06  p2=-4.25457e+06
+  rho           method=maxval    p1=71.9135  p2=0
+  s             method=minmax    p1=6401.79  p2=14782.3
+  u             method=minmax    p1=-4.45911e+06  p2=-4.25891e+06
+
+Saved scaled CSV : /home/aritram/Desktop/eos_work/github_upload/nn_eos_web/data/scaled/liquid_ph2_qcc_scaled.csv
+Saved scaling params: /home/aritram/Desktop/eos_work/github_upload/nn_eos_web/data/scaled/liquid_ph2_qcc_scaling.csv
+
+Scaled ranges:
+  P_Pa          [0.0000, 1.0000]
+  T_K           [0.0000, 1.0000]
+  cp            [0.0000, 1.0000]
+  cs2           [0.1419, 1.0000]
+  drdP          [-0.2975, 137.3311]
+  drdT          [-133.9580, 0.3817]
+  g             [0.0000, 1.0000]
+  gamma         [-1.5483, 1.9936]
+  h             [0.0000, 1.0000]
+  rho           [0.5997, 1.0000]
+  s             [0.0000, 1.0000]
+  u             [0.0000, 1.0000]

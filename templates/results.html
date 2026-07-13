@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>nn_eos — Results</title>
+</head>
+<body>
+    <h1>Training Complete</h1>
+
+    <h3>Summary</h3>
+    <p><b>Property:</b> {{ prop }} | <b>Phase:</b> {{ phase }}</p>
+    <p><b>Final val_loss:</b> {{ final_loss }}</p>
+    <p><b>Final val_MAPE:</b> {{ final_mape }}</p>
+
+    <h3>Loss Curve</h3>
+    <img src="{{ plot_path }}" width="800">
+
+    <br><br>
+    <a href="/download/{{ prop }}/{{ phase }}">
+        <button>Download Trained Model (.zip)</button>
+    </a>
+    <br><br>
+    <a href="/train">Train another model</a>
+
+</body>
+</html>

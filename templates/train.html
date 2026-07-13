@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>nn_eos — Train</title>
+</head>
+<body>
+    <h1>Train a Surrogate Model</h1>
+
+    <form action="/train" method="POST" enctype="multipart/form-data">
+
+        <h3>1. Upload CSV</h3>
+        <input type="file" name="csv_file" accept=".csv" required>
+
+        <h3>2. Select Property and Phase</h3>
+        <label>Property:</label>
+        <select name="property">
+            <option value="rho">rho (density)</option>
+            <option value="cs2">cs2 (speed of sound squared)</option>
+            <option value="h">h (enthalpy)</option>
+            <option value="cp">cp (heat capacity)</option>
+        </select>
+        <br><br>
+        <label>Phase:</label>
+        <select name="phase">
+            <option value="liquid">liquid</option>
+            <option value="vapor">vapor</option>
+        </select>
+
+        <h3>3. Training Configuration</h3>
+        <label>Hidden layers (comma separated):</label>
+        <input type="text" name="n_hidden" value="16,8,4">
+        <br><br>
+        <label>Learning rate:</label>
+        <input type="text" name="lr" value="0.000002">
+        <br><br>
+        <label>Epochs:</label>
+        <input type="number" name="epochs" value="500">
+        <br><br>
+        <label>Batch size:</label>
+        <input type="number" name="batch_size" value="32">
+        <br><br>
+        <label>Activation:</label>
+        <select name="activation">
+            <option value="srelu3">srelu3</option>
+            <option value="srelu">srelu</option>
+            <option value="relu">relu</option>
+            <option value="tanh">tanh</option>
+        </select>
+
+        <h3>4. Scaling Method</h3>
+        <label>Input scaling (T, P):</label>
+        <select name="scaling">
+            <option value="minmax">minmax</option>
+            <option value="standard">standard</option>
+        </select>
+
+        <br><br>
+        <input type="submit" value="Train Model">
+
+    </form>
+</body>
+</html>

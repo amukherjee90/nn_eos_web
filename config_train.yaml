@@ -1,24 +1,20 @@
-# nn_eos training configuration
-# activation: relu | tanh | srelu | srelu3
-# srelu_eps : blend width (default 0.5)
-#             larger eps = smoother, try 1.0 or 2.0 to fix drdP_liq jump
-#
-# srelu  = C2 smooth (f, f', f'' continuous) — degree-4 polynomial blend
-# srelu3 = C3 smooth (f, f', f'', f''' continuous) — degree-7 smoothstep blend
-#          eliminates second-derivative discontinuity, better for derivatives
-
-property: rho
-phase: liquid
-eos: ph2_qcc
-inputs: [T_K, P_Pa]
-n_hidden: [16, 8, 4]
 activation: srelu3
-srelu_eps: 1.0
-lr: 0.000002
-epochs: 10
 batch_size: 32
-use_deriv_loss: false
+eos: ph2_qcc
+epochs: 10
+inputs:
+- T_K
+- P_Pa
 loss_weights:
-  rho : 1.0
-  drdT : 0.01
-  drdP : 0.01
+  drdP: 0.01
+  drdT: 0.01
+  rho: 1.0
+lr: 2.0e-06
+n_hidden:
+- 16
+- 8
+- 4
+phase: liquid
+property: rho
+srelu_eps: 1.0
+use_deriv_loss: false
