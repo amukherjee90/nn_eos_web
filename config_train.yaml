@@ -9,7 +9,7 @@ loss_weights:
   drdP: 0.01
   drdT: 0.01
   rho: 1.0
-lr: 2.0e-05
+lr: 1.0e-04
 n_hidden:
 - 16
 - 8
