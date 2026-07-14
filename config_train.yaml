@@ -1,7 +1,7 @@
 activation: srelu3
 batch_size: 32
 eos: ph2_qcc
-epochs: 10
+epochs: 5
 inputs:
 - T_K
 - P_Pa
@@ -9,7 +9,7 @@ loss_weights:
   drdP: 0.01
   drdT: 0.01
   rho: 1.0
-lr: 2.0e-06
+lr: 2.0e-05
 n_hidden:
 - 16
 - 8

@@ -19,9 +19,11 @@ import argparse
 import numpy as np
 import yaml
 import tensorflow as tf
+import mlflow
 from pathlib import Path
 from datetime import datetime
 from sklearn.model_selection import train_test_split
+
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
@@ -71,7 +73,7 @@ def deriv_train(model, X_train, y_train, X_val, y_val,
 
     print(f"\n  GradientTape training: {epochs} epochs, lr={lr}")
     print(f"  Loss weights: {loss_weights}")
-
+    
     w_deriv_tf      = [tf.constant(w, dtype=tf.float32) for w in deriv_weights]
     factor_deriv_tf = [tf.constant(f, dtype=tf.float32)
                        for f in deriv_factors[:len(deriv_cols)]]
@@ -163,7 +165,7 @@ def deriv_train(model, X_train, y_train, X_val, y_val,
 
 
 def write_training_log(log_path, cfg, model_name, resumed,
-                       final_val_loss, final_val_mape):
+                       final_val_loss, final_val_mape,run_id):
     """Append a training summary block to models/{model}/training_log.txt."""
     log_path.parent.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -186,6 +188,7 @@ def write_training_log(log_path, cfg, model_name, resumed,
         f.write(f"{dash}\n")
         f.write(f"final val_loss : {final_val_loss:.6f}\n")
         f.write(f"final val_MAPE : {final_val_mape:.4f} %\n")
+        f.write(f"mlflow_run_id  : {run_id}\n")
         f.write(f"{sep}\n")
     print(f"\nTraining log appended: {log_path}")
 
@@ -231,6 +234,23 @@ if __name__ == '__main__':
     print(f"  batch_size    : {batch_size}")
     print(f"  use_deriv_loss: {use_deriv_loss}")
     print(f"  loss_weights  : {loss_weights}")
+    
+    # ── MLflow — start run and log params ─────────────────────────
+   # mlflow.set_tracking_uri(":./mlruns")
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_experiment("nn_eos")
+    mlflow.start_run()
+    run_id = mlflow.active_run().info.run_id
+    print(f"\nMLflow run ID: {run_id}")
+    mlflow.log_param("property", property_name)
+    mlflow.log_param("phase", phase)
+    mlflow.log_param("n_hidden", str(n_hidden))
+    mlflow.log_param("activation", activation)
+    mlflow.log_param("lr", lr)
+    mlflow.log_param("epochs", epochs)
+    mlflow.log_param("batch_size", batch_size)
+    mlflow.log_param("use_deriv_loss", use_deriv_loss)
+
 
     # ── load data ─────────────────────────────────────────────────────
     df = load_scaled_csv(eos, phase, project_root)
@@ -374,4 +394,10 @@ if __name__ == '__main__':
     # ── write training log ────────────────────────────────────────────
     log_path = project_root / 'models' / model_name / 'training_log.txt'
     write_training_log(log_path, cfg, model_name, args.resume,
-                       final_val_loss, final_val_mape)
+                       final_val_loss, final_val_mape,run_id)
+    # ── MLflow — log metrics and end run ──────────────────────────
+    mlflow.log_metric("val_loss", final_val_loss)
+    mlflow.log_metric("val_mape", final_val_mape)
+    mlflow.log_artifact(str(hist_path))
+    mlflow.tensorflow.log_model(model, name="model")
+    mlflow.end_run()

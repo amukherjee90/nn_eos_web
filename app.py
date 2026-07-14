@@ -7,6 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from flask import Flask, render_template, request, send_file
+import mlflow
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'data/raw'
