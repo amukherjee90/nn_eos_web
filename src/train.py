@@ -372,8 +372,9 @@ if __name__ == '__main__':
         hist_path = project_root / 'models' / model_name / 'history.csv'
         hist_path.parent.mkdir(parents=True, exist_ok=True)
         import csv
-        write_header = not hist_path.exists()
-        with open(hist_path, 'a', newline='') as hf:
+        write_mode = 'a' if args.resume else 'w'
+        write_header = not hist_path.exists() or not args.resume
+        with open(hist_path, write_mode, newline='') as hf:
             writer = csv.writer(hf)
             if write_header:
                 writer.writerow(['epoch', 'val_loss', 'val_mape'])
