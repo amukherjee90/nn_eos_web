@@ -6,3 +6,5 @@ src/__pycache__/
 *.pyo
 .env
 uploads/
+mlruns/
+mlflow.db
