@@ -4,30 +4,35 @@
     <title>nn_eos Web App</title>
 </head>
 <body>
-    <h1>nn_eos — Neural Network Surrogate Trainer</h1>
+    <h1>NN_EOS</h1>
 
     <p>
-        nn_eos is a web application for training neural network surrogates 
-        for thermodynamic property prediction. Upload your dataset, configure 
+        This is a web application for training neural network surrogates 
+        for thermodynamic property prediction. Upload the dataset, configure 
         the training parameters, and download a trained model ready for 
-        integration into CFD solvers.
+        integration into CFD solvers. 
     </p>
 
-    <h3>What it does</h3>
+    <p>
+        Traditional equation of state (EOS) libraries are accurate but slow. 
+        They use very complex functions to predict thermodynamic properties like 
+        phasic densities, speed of sound etc. Evaluation of these functions are 
+        computationally expensive and slows down the simulation. A neural network surrogate trained on 
+        EOS data can achieve comparable accuracy at significantly higher speed — making it suitable for 
+        integration into time-critical CFD simulations.
+    </p>
+
+    <h3>Workflow</h3>
     <ul>
         <li>Accepts a CSV file with thermodynamic data (P, T, property columns)</li>
         <li>Scales the data and trains a neural network surrogate</li>
         <li>Shows training results — MAPE, loss curve, parity plot</li>
         <li>Returns a downloadable TensorFlow SavedModel</li>
+        <li>Can resume the training from last saved model also</li>
     </ul>
 
-    <h3>Use case</h3>
-    <p>
-        Traditional equation of state (EOS) libraries are accurate but slow. 
-        A neural network surrogate trained on EOS data achieves comparable 
-        accuracy at significantly higher speed — making it suitable for 
-        integration into time-critical CFD simulations.
-    </p>
+    
+    
 
     <br>
     <a href="/train">
