@@ -1,14 +1,12 @@
 # nn_eos_web — Project Log
 **From Flask to Docker: Complete Development Record**
-*Started: July 14, 2026*
+
 
 ---
 
 ## Project Overview
 
-Extension of the `nn_eos` neural network surrogate project into a deployable web application. The original `nn_eos` project trained neural networks to replace thermodynamic equation of state (EOS) lookups in a Fortran DNS solver (FluTAS). This project packages that pipeline into a Flask web app with MLflow experiment tracking and Docker containerisation.
-
-**GitHub:** https://github.com/amukherjee90/nn_eos_web
+Extension of the `nn_eos` neural network surrogate project into a deployable web application. The original `nn_eos` project trained neural networks to replace thermodynamic equation of state(EOS) lookups in a compressible CFD solver (FluTAS). This project packages that pipeline into a Flask web app with MLflow experiment tracking and Docker containerisation.
 
 ---
 
@@ -322,7 +320,7 @@ sudo usermod -aG docker $USER
 # Log out and log back in for group change to take effect
 ```
 
-### requirements.txt (minimal)
+### requirements.txt
 
 ```
 flask==3.1.3
@@ -334,8 +332,6 @@ pyyaml==6.0.3
 scikit-learn==1.7.1
 mlflow==3.14.0
 ```
-
-**Why minimal?** `pip freeze` captures the entire conda environment (hundreds of packages). Docker image would be enormous. Only list what the app actually imports.
 
 ### Dockerfile
 
