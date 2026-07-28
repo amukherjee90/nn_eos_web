@@ -16,6 +16,13 @@ app.config['UPLOAD_FOLDER'] = 'data/raw'
 def index():
     return render_template('index.html')
 
+@app.route('/analyze', methods=['GET', 'POST'])
+def analyze():
+    if request.method == 'GET':
+        return "analyze the data"
+        #return render_template('train.html')
+
+
 @app.route('/train', methods=['GET', 'POST'])
 def train():
     if request.method == 'GET':
