@@ -19,8 +19,8 @@ def index():
 @app.route('/analyze', methods=['GET', 'POST'])
 def analyze():
     if request.method == 'GET':
-        return "analyze the data"
-        #return render_template('train.html')
+        #return "analyze the data"
+        return render_template('analysis.html')
 
 
 @app.route('/train', methods=['GET', 'POST'])
