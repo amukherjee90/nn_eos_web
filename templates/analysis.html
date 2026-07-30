@@ -10,20 +10,43 @@
     <form action="/analyze" method="POST" enctype="multipart/form-data">
 
         <h3>Upload CSV</h3>
-        <input type="file" name="csv_file" accept=".csv" required>
+        <input type="file" name="csv_file" accept=".csv">
+        <br><br>
+        <button type="submit" name="action" value="stats">Upload</button>
 
         <h3>Line Plot</h3>
         <label>Property:</label>
         <select name="property">
             <option value="rho">rho (density)</option>
+            <option value="drdT">drdT (density derivative wrt T)</option>
+            <option value="drdP">drdP (density derivative wrt P)</option>
             <option value="cs2">cs2 (speed of sound squared)</option>
             <option value="h">h (enthalpy)</option>
             <option value="cp">cp (heat capacity)</option>
+            <option value="u">u (internal energy)</option>
+            <option value="gamma">gamma</option>
+            <option value="s">s (entropy)</option>
+            <option value="g">g (Gibbs free energy)</option>
         </select>
         <br><br>
-        <button type="submit">Plot P, T vs property</button>
+        <button type="submit" name="action" value="plot">Plot P, T vs property</button>
 
     </form>
+
+    {% if stats %}
+    <h3>Column Statistics</h3>
+    <table border="1" cellpadding="4">
+        <tr><th>Column</th><th>Max</th><th>Min</th><th>Mean</th></tr>
+        {% for row in stats %}
+        <tr>
+            <td>{{ row.column }}</td>
+            <td>{{ row.max }}</td>
+            <td>{{ row.min }}</td>
+            <td>{{ row.mean }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
 
     {% if plot_path %}
     <h3>Line plot: P, T vs {{ prop }}</h3>

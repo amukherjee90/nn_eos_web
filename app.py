@@ -20,8 +20,23 @@ def analyze():
     if request.method == 'GET':
         return render_template('analysis.html')
 
-    csv_file = request.files['csv_file']
-    df = pd.read_csv(csv_file)
+    csv_path = os.path.join(app.config['UPLOAD_FOLDER'], 'last_analysis.csv')
+    csv_file = request.files.get('csv_file')
+    if csv_file and csv_file.filename:
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        csv_file.save(csv_path)
+    elif not os.path.exists(csv_path):
+        return "Please upload a CSV file first."
+
+    df = pd.read_csv(csv_path)
+
+    stats = df.describe().loc[['max', 'min', 'mean']].T.reset_index()
+    stats.columns = ['column', 'max', 'min', 'mean']
+    stats = stats.to_dict('records')
+
+    if request.form.get('action') != 'plot':
+        return render_template('analysis.html', stats=stats)
+
     prop = request.form['property']
 
    # pick the middle value actually present in the data for each variable
@@ -49,7 +64,7 @@ def analyze():
     plt.savefig(plot_path)
     plt.close()
 
-    return render_template('analysis.html', prop=prop, plot_path=plot_path)
+    return render_template('analysis.html', prop=prop, plot_path=plot_path, stats=stats)
 
 @app.route('/train', methods=['GET', 'POST'])
 def train():
