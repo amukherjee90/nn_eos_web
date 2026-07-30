@@ -88,7 +88,7 @@ No local Python setup needed — everything runs inside the container.
 
 1. Open `http://localhost:5000` in a browser.
 2. Go to **Train** and:
-   - Upload a CSV with `P`, `T`, and target property columns.
+   - Upload a CSV with `P`, `T`, and target property columns. (Can use sample CSV files uploaded in main folder)
    - Select the property (`rho`, `cs2`, `h`, `cp`) and phase (`liquid`, `vapor`).
    - Set the hidden layer sizes, activation, learning rate, epochs, batch size, and input scaling method.
    - Optionally check **Resume from last saved model**.
