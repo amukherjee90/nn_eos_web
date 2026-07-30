@@ -94,6 +94,7 @@ No local Python setup needed — everything runs inside the container.
    - Optionally check **Resume from last saved model**.
    - Submit to scale the data and train the model.
 3. View the results page: final validation loss / MAPE, a loss-curve plot, and a **Download** button for the trained model (zipped TensorFlow SavedModel).
+4. Go to analysis page, upload the csv, and then check out line plot for pressure and temperature vs. property.
 
 ### Under the hood
 
