@@ -6,8 +6,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from flask import Flask, render_template, request, send_file, jsonify
-import mlflow
+from flask import Flask, render_template, request, send_file
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'data/raw'
@@ -19,14 +18,44 @@ def index():
 @app.route('/analyze', methods=['GET', 'POST'])
 def analyze():
     if request.method == 'GET':
-        #return "analyze the data"
         return render_template('analysis.html')
 
+    csv_file = request.files['csv_file']
+    df = pd.read_csv(csv_file)
+    prop = request.form['property']
+
+   # pick the middle value actually present in the data for each variable
+    p_mid = sorted(df['P'].unique())[len(df['P'].unique()) // 2]
+    t_mid = sorted(df['T'].unique())[len(df['T'].unique()) // 2]
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
+    
+    # left: P vs prop, at fixed T = t_mid (all P values at that T)
+    sub1 = df[df['T'] == t_mid].sort_values('P')
+    ax1.plot(sub1['P'], sub1[prop])
+    ax1.set_xlabel('P')
+    ax1.set_ylabel(prop)
+    ax1.set_title(f'T = {t_mid}')
+    
+    # right: T vs prop, at fixed P = p_mid (all T values at that P)
+    sub2 = df[df['P'] == p_mid].sort_values('T')
+    ax2.plot(sub2['T'], sub2[prop])
+    ax2.set_xlabel('T')
+    ax2.set_ylabel(prop)
+    ax2.set_title(f'P = {p_mid}')
+    
+    plt.tight_layout()
+    plot_path = f"static/plots/lineplot_{prop}.png"
+    plt.savefig(plot_path)
+    plt.close()
+
+    return render_template('analysis.html', prop=prop, plot_path=plot_path)
 
 @app.route('/train', methods=['GET', 'POST'])
 def train():
     if request.method == 'GET':
         return render_template('train.html')
+    
 
     # ── get form inputs ───────────────────────────────────────────
     csv_file   = request.files['csv_file']
@@ -149,102 +178,6 @@ def train():
         model_dir=model_dir
     )
 
-@app.route('/api/train', methods=['POST'])
-def api_train():
-    # ── get JSON config ───────────────────────────────────────────
-    config     = request.form
-    prop       = config['property']
-    phase      = config['phase']
-    n_hidden   = [int(x) for x in config['n_hidden'].strip('[]').split(',')]
-    lr         = float(config['lr'])
-    epochs     = int(config['epochs'])
-    batch_size = int(config['batch_size'])
-    activation = config['activation']
-    scaling    = config['scaling']
-
-    # ── get uploaded CSV ──────────────────────────────────────────
-    csv_file     = request.files['csv_file']
-    csv_filename = f"{phase}_ph2_qcc.csv"
-    csv_path     = os.path.join(app.config['UPLOAD_FOLDER'], csv_filename)
-    csv_file.save(csv_path)
-
-    # ── write configs ─────────────────────────────────────────────
-    scale_cfg = {
-        'ph2_qcc': {
-            'T_K':  {'method': scaling},
-            'P_Pa': {'method': scaling},
-            'rho':  {'method': 'maxval'},
-            'drdT': {'method': 'standard'},
-            'drdP': {'method': 'standard'},
-            'cs2':  {'method': 'maxval'},
-            'h':    {'method': 'minmax'},
-            'cp':   {'method': 'minmax'},
-            'u':    {'method': 'minmax'},
-            'gamma':{'method': 'standard'},
-            's':    {'method': 'minmax'},
-            'g':    {'method': 'minmax'},
-        }
-    }
-    with open('config_scale.yaml', 'w') as f:
-        yaml.dump(scale_cfg, f, default_flow_style=False)
-
-    train_cfg = {
-        'property': prop,
-        'phase': phase,
-        'eos': 'ph2_qcc',
-        'inputs': ['T_K', 'P_Pa'],
-        'n_hidden': n_hidden,
-        'activation': activation,
-        'srelu_eps': 1.0,
-        'lr': lr,
-        'epochs': epochs,
-        'batch_size': batch_size,
-        'use_deriv_loss': False,
-        'loss_weights': {'rho': 1.0, 'drdT': 0.01, 'drdP': 0.01}
-    }
-    with open('config_train.yaml', 'w') as f:
-        yaml.dump(train_cfg, f, default_flow_style=False)
-
-    # ── run scaling ───────────────────────────────────────────────
-    with open('logs/scaling.log', 'w') as log:
-        result = subprocess.run(
-            ['python', 'src/scaling.py', '--eos', 'ph2_qcc', '--phase', phase],
-            stdout=log, stderr=log,
-            cwd=os.path.dirname(os.path.abspath(__file__))
-        )
-    if result.returncode != 0:
-        return jsonify({"status": "error", "message": "Scaling failed"})
-
-    # ── run training ──────────────────────────────────────────────
-    with open('logs/training.log', 'w') as log:
-        result = subprocess.run(
-            ['python', 'src/train.py'],
-            stdout=log, stderr=log,
-            cwd=os.path.dirname(os.path.abspath(__file__))
-        )
-    if result.returncode != 0:
-        return jsonify({"status": "error", "message": "Training failed"})
-
-    # ── read results ──────────────────────────────────────────────
-    log_path   = f"models/{prop}_{phase}/training_log.txt"
-    final_mape = None
-    final_loss = None
-    run_id     = None
-    with open(log_path) as f:
-        for line in f:
-            if 'final val_MAPE' in line:
-                final_mape = line.split(':')[1].strip()
-            if 'final val_loss' in line:
-                final_loss = line.split(':')[1].strip()
-            if 'mlflow_run_id' in line:
-                run_id = line.split(':')[1].strip()
-
-    return jsonify({
-        "status": "success",
-        "val_mape": final_mape,
-        "val_loss": final_loss,
-        "run_id": run_id
-    })
 
 @app.route('/download/<prop>/<phase>')
 def download(prop, phase):

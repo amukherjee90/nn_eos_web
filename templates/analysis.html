@@ -4,14 +4,15 @@
     <title>nn_eos — Train</title>
 </head>
 <body>
+    <a href="/">&larr; Home</a>
     <h1>Analyze the data</h1>
 
-    <form action="/train" method="POST" enctype="multipart/form-data">
+    <form action="/analyze" method="POST" enctype="multipart/form-data">
 
-        <h3>1. Upload CSV</h3>
+        <h3>Upload CSV</h3>
         <input type="file" name="csv_file" accept=".csv" required>
 
-        <h3>2. Select Property and Phase</h3>
+        <h3>Line Plot</h3>
         <label>Property:</label>
         <select name="property">
             <option value="rho">rho (density)</option>
@@ -20,25 +21,13 @@
             <option value="cp">cp (heat capacity)</option>
         </select>
         <br><br>
-        <label>Phase:</label>
-        <select name="phase">
-            <option value="liquid">liquid</option>
-            <option value="vapor">vapor</option>
-        </select>
-
-        <h3>4. Scaling Method</h3>
-        <label>Input scaling (T, P):</label>
-        <select name="scaling">
-            <option value="minmax">minmax</option>
-            <option value="standard">standard</option>
-        </select>
-
-        <br><br>
-        <input type="submit" value="Train Model">
-
-	<h3>5. Resume Training?</h3>
-	<input type="checkbox" name="resume" value="true"> Resume from last saved model
+        <button type="submit">Plot P, T vs property</button>
 
     </form>
+
+    {% if plot_path %}
+    <h3>Line plot: P, T vs {{ prop }}</h3>
+    <img src="/{{ plot_path }}" width="500">
+    {% endif %}
 </body>
 </html>
